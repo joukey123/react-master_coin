@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom"
+import { Route, Switch, useLocation, useParams, Link, useRouteMatch} from "react-router-dom"
 import styled from "styled-components"
+import Price from "./Price";
+import Chart from "./Chart";
 
 const Container = styled.div`
     padding: 0 20px;
@@ -23,7 +25,7 @@ const Title = styled.h1`
 const Loader = styled.span`
     text-align: center;
     display: block;
-`
+`;
 
 const Overview = styled.div`
     display: flex;
@@ -33,6 +35,7 @@ const Overview = styled.div`
     padding: 15px 20px;
     border-radius: 10px;
 `;
+
 const OverviewItem = styled.div`
     display: flex;
     flex-direction: column;
@@ -48,15 +51,29 @@ const OverviewItem = styled.div`
 const Description = styled.p`
     margin: 20px 0;
 `;
-
+const Taps = styled.div`
+    display: grid;
+    grid-template-columns: repeat(2,auto);
+    grid-column-gap: 20px;
+`
+const Tap = styled.div<{isActive:boolean}>`
+    background-color: rgba(0,0,0,0.5);
+    text-align:center;
+    border-radius: 10px;
+    margin: 20px 0;
+    color : ${ porps => porps.isActive ? props=>props.theme.accentColor : props=>props.theme.textColor};
+    a {
+        display: block;
+        padding: 10px 0px;
+    }
+`
 interface RouteParams {
     coinId : string;
-}
+};
 
 interface RouteState {
     name: string
-}
-
+};
 
 interface IInforData {
     id : string;
@@ -78,9 +95,7 @@ interface IInforData {
     hash_algorithm : string;
     first_data_at : string;
     last_data_at : string;
-}
-
-
+};
 
 interface IPriceData {
     id : string;
@@ -114,7 +129,7 @@ interface IPriceData {
             volume_24h_change_24h : number;            
         }
     };
-}
+};
 
 function Coin () {
     const [loading, setLoading] = useState(true);
@@ -122,7 +137,9 @@ function Coin () {
     const { state } = useLocation<RouteState>();
     const [info, setInfo] = useState<IInforData>();
     const [priceInfo, setPriceInfo] = useState<IPriceData>();
-    
+    const priceMath = useRouteMatch("/:coinId/price"); //해당 url과 일치하면 object 반환, 아니면 null
+    const chartMath = useRouteMatch("/:coinId/chart");
+
     useEffect( () => {
         ( async () => {
             const infoData = await(await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)).json();
@@ -166,11 +183,25 @@ function Coin () {
                         </OverviewItem>
                     </Overview>
 
+                    <Taps>
+                        <Tap isActive={ chartMath !== null }>
+                           <Link to={`/${coinId}/chart`}> Chart </Link>
+                        </Tap>
+                        <Tap isActive={ priceMath !== null }>
+                            <Link to={`/${coinId}/price`}> Price </Link>
+                        </Tap>
+                    </Taps>
+
+
+                    <Switch>
+                        <Route path={`/:coinId/chart`}>
+                            <Chart />
+                        </Route>
+                        <Route path={`/:coinId/price`}>
+                            <Price />
+                        </Route>
+                    </Switch>
                 </>
-
-
-
-
             ) }
         </Container>
     );
