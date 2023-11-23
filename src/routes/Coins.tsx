@@ -1,8 +1,8 @@
 import styled from "styled-components"
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { fetchCoins } from "../api";
+import Helmet from "react-helmet";
 
 const Container = styled.div`
     padding: 0 20px;
@@ -24,6 +24,7 @@ const Coin = styled.li`
     color : ${props => props.theme.bgColor};
     margin-bottom: 10px;
     border-radius: 15px;
+    border: 1px solid rgba(0,0,0,0.5);
     a{  
         display: flex;
         align-items: center;
@@ -62,7 +63,10 @@ interface ICoin {
     type: string,
 }
 
-function Coins() {
+interface ICoinsProps {
+    toggleDark : () => void;
+}
+function Coins({toggleDark}:ICoinsProps) {
     const { isLoading, data } = useQuery<ICoin[]>("allCoins",fetchCoins)
    /*  const [coins,setCoins] = useState<CoinInterface[]>([]);
     const [loading,setLoading] = useState(true);
@@ -76,8 +80,12 @@ function Coins() {
     }, []); */
     return(
         <Container>
+            <Helmet>
+                <title>코인</title>
+            </Helmet>
             <Header>
                 <Title>코인</Title>
+                <button onClick={toggleDark}> darkMode </button>
             </Header>
             {isLoading ? <Loader>Loading...</Loader> 
             : <CoinsList>
