@@ -33,7 +33,7 @@ const Overview = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: rgba(0,0,0,0.5);
+    background-color: ${props => props.theme.tapBgColor};
     padding: 15px 20px;
     border-radius: 10px;
 `;
@@ -59,7 +59,7 @@ const Taps = styled.div`
     grid-column-gap: 20px;
 `
 const Tap = styled.div<{isActive:boolean}>`
-    background-color: rgba(0,0,0,0.5);
+    background-color: ${props => props.theme.tapBgColor};
     text-align:center;
     border-radius: 10px;
     margin: 20px 0;
